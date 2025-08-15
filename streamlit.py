@@ -84,7 +84,7 @@ st.markdown(f"""
     <h1 style='text-align: center; color: #2E86AB; flex-grow:1;'>💵 Genuinely 💵</h1>
 </div>
 <marquee behavior="scroll" direction="left" style="color: #117A65; font-size:20px;">
-    🔍 Analysez l'authenticité de vos billets avec précision !
+    🔍 Analysez l'authenticité de vos billets en temps réel !
 </marquee>
 """, unsafe_allow_html=True)
 
