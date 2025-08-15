@@ -153,7 +153,7 @@ if uploaded_file is not None:
             
             # Bouton KPI
             
-            if st.button("statistiques"):
+            if st.button("📊 statistiques"):
                 pct_vrai = round(vrai/total*100,1) if total>0 else 0
                 pct_faux = round(faux/total*100,1) if total>0 else 0
 
