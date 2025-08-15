@@ -181,7 +181,7 @@ if uploaded_file is not None:
            
             st.header("Graphiques")
             chart_type = st.selectbox("Type de graphique", ["Camembert", "Barplot"], key="graph_select")
-            if st.button("📈 Afficher le graphique"):
+            if st.button("📈 Afficher le graphique de répartition"):
                 labels = ["Vrai billet", "Faux billet"]
                 values = [vrai, faux]
 
