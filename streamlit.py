@@ -7,6 +7,15 @@ import matplotlib.pyplot as plt
 import time
 
 # -----------------------------
+# Configuration de la page
+# -----------------------------
+st.set_page_config(
+    page_title="Genuinely - Détection de faux billets",
+    page_icon="💵",
+    layout="wide",
+)
+
+# -----------------------------
 # Choix du thème
 # -----------------------------
 theme = st.sidebar.selectbox("Choisir le thème", ["Clair", "Sombre"])
@@ -29,7 +38,7 @@ else:
     df_text_color = "#f5f5f5"
 
 # -----------------------------
-# Style CSS
+# Style CSS global
 # -----------------------------
 st.markdown(f"""
     <style>
@@ -54,77 +63,65 @@ st.markdown(f"""
     h1 {{
         font-family: "Arial Black", Gadget, sans-serif;
     }}
+    div.stFileUploader label {{
+        color: #117A65;
+        font-weight: bold;
+        font-size: 16px;
+    }}
+    div.stFileUploader {{
+        background-color: #f0f8ff;
+        padding: 15px;
+        border-radius: 10px;
+    }}
     </style>
 """, unsafe_allow_html=True)
 
-# -----------------------------
-# Configuration page
-# -----------------------------
-st.set_page_config(
-    page_title="Genuinely - Détection de faux billets",
-    page_icon="💵",
-    layout="wide",
-)
 
-# -----------------------------
-# Titre + texte défilant
-# -----------------------------
+
 st.markdown(f"""
-    <h1 style='text-align: center; color: #2E86AB;'>💵 Genuinely 💵</h1>
-    <marquee behavior="scroll" direction="left" style="color: #117A65; font-size:20px;">
-        🔍 Analysez l'authenticité de vos billets avec précision !
-    </marquee>
+<div style='display: flex; justify-content: space-between; align-items: center;'>
+    <span style='color: gray; font-size:14px;'>Prédictions_by_Mozart</span>
+    <h1 style='text-align: center; color: #2E86AB; flex-grow:1;'>💵 Genuinely 💵</h1>
+</div>
+<marquee behavior="scroll" direction="left" style="color: #117A65; font-size:20px;">
+    🔍 Analysez l'authenticité de vos billets avec précision !
+</marquee>
 """, unsafe_allow_html=True)
 
-# CSS pour personnaliser le file uploader
 # -----------------------------
-st.markdown("""
-<style>
-div.stFileUploader label {
-    color: #117A65;
-    font-weight: bold;
-    font-size: 16px;
-}
-div.stFileUploader {
-    background-color: #f0f8ff; /* fond clair du composant */
-    padding: 15px;
-    border-radius: 10px;
-}
-</style>
-""", unsafe_allow_html=True)
-
-
+# URL de l'API Render
+# -----------------------------
 API_URL = "https://detection-faux-billets-api-488d.onrender.com/predict/"
 
-
+# -----------------------------
+# Upload CSV
+# -----------------------------
 st.header("1️⃣ Importez votre fichier CSV")
-fichier_importé = st.file_uploader(
+uploaded_file = st.file_uploader(
     label="📂 Glissez-déposez votre fichier CSV ici ou cliquez pour le sélectionner",
     type=["csv"]
 )
 
-if fichier_importé is not None:
+if uploaded_file is not None:
     try:
-        contenu = fichier_importé.getvalue().decode("utf-8")
-        dialect = csv.Sniffer().sniff(contenu)
-        sep = dialect.delimiter
-        df = pd.read_csv(StringIO(contenu), sep=sep)
+        content = uploaded_file.getvalue().decode("utf-8")
+        sep = csv.Sniffer().sniff(content).delimiter
+        df = pd.read_csv(StringIO(content), sep=sep)
 
         st.subheader("Aperçu des données")
-        # DataFrame stylé selon le thème
         st.dataframe(df.style.set_properties(**{
             'background-color': df_bg_color,
             'color': df_text_color
         }))
 
         # -----------------------------
-        # Envoyer à l'API
+        # Bouton prédiction
         # -----------------------------
         st.header("2️⃣ Détection")
         if st.button("📤 Prédire"):
             with st.spinner("Envoi en cours..."):
-                data= {"file": (fichier_importé.name, fichier_importé.getvalue(), "text/csv")}
-                response = requests.post(API_URL, files=data)
+                files = {"file": (uploaded_file.name, uploaded_file.getvalue(), "text/csv")}
+                response = requests.post(API_URL, files=files)
 
                 if response.status_code != 200:
                     st.error(f"Erreur API: {response.status_code}")
@@ -149,13 +146,13 @@ if fichier_importé is not None:
                 'color': df_text_color
             }))
 
-            vrai = st.session_state.summary.get("vrai_billet", 0)
-            faux = st.session_state.summary.get("faux_billet", 0)
+            vrai = st.session_state.summary.get("vrai_billet",0)
+            faux = st.session_state.summary.get("faux_billet",0)
             total = vrai + faux
 
-            # -----------------------------
+            
             # Bouton KPI
-            # -----------------------------
+            
             if st.button("📊 Voir les KPI"):
                 pct_vrai = round(vrai/total*100,1) if total>0 else 0
                 pct_faux = round(faux/total*100,1) if total>0 else 0
@@ -179,9 +176,9 @@ if fichier_importé is not None:
 
             st.markdown("---")
 
-            # -----------------------------
-            # Graphiques interactifs
-            # -----------------------------
+            
+            # Graphiques
+           
             st.header("4️⃣ Graphiques")
             chart_type = st.selectbox("Type de graphique", ["Camembert", "Barplot"], key="graph_select")
             if st.button("📈 Afficher le graphique"):
@@ -192,7 +189,7 @@ if fichier_importé is not None:
                     st.warning("Aucune donnée pour afficher le graphique.")
                 else:
                     fig, ax = plt.subplots(figsize=(6,4))
-                    if chart_type == "Camembert":
+                    if chart_type=="Camembert":
                         ax.pie(values, labels=labels, autopct="%1.1f%%", startangle=90, colors=["green","red"])
                         ax.axis("equal")
                         ax.set_title("Répartition des billets", color=text_color)
@@ -204,9 +201,9 @@ if fichier_importé is not None:
                         ax.tick_params(axis='y', colors=text_color)
                     st.pyplot(fig)
 
-            # -----------------------------
+            
             # Télécharger CSV
-            # -----------------------------
+        
             st.header("5️⃣ Télécharger le fichier avec prédictions")
             csv_data = st.session_state.df_result.to_csv(index=False).encode("utf-8")
             st.download_button(
