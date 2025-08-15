@@ -15,9 +15,9 @@ st.set_page_config(
     layout="wide",
 )
 
-# -----------------------------
+
 # Choix du thème
-# -----------------------------
+
 theme = st.sidebar.selectbox("Choisir le thème", ["Clair", "Sombre"])
 
 if theme == "Clair":
@@ -37,9 +37,9 @@ else:
     df_bg_color = "#1e1e1e"
     df_text_color = "#f5f5f5"
 
-# -----------------------------
+
 # Style CSS global
-# -----------------------------
+
 st.markdown(f"""
     <style>
     body {{
@@ -93,10 +93,10 @@ st.markdown(f"""
 # -----------------------------
 API_URL = "https://detection-faux-billets-api-488d.onrender.com/predict/"
 
-# -----------------------------
+
 # Upload CSV
-# -----------------------------
-st.header("1️⃣ Importez votre fichier CSV")
+
+st.header("Importez votre fichier CSV")
 uploaded_file = st.file_uploader(
     label="📂 Glissez-déposez votre fichier CSV ici ou cliquez pour le sélectionner",
     type=["csv"]
@@ -114,10 +114,10 @@ if uploaded_file is not None:
             'color': df_text_color
         }))
 
-        # -----------------------------
+       
         # Bouton prédiction
-        # -----------------------------
-        st.header("2️⃣ Détection")
+      
+        st.header("Détection")
         if st.button("📤 Prédire"):
             with st.spinner("Envoi en cours..."):
                 files = {"file": (uploaded_file.name, uploaded_file.getvalue(), "text/csv")}
@@ -140,7 +140,7 @@ if uploaded_file is not None:
         # Résultats
         # -----------------------------
         if "df_result" in st.session_state:
-            st.header("3️⃣ Résultats des prédictions")
+            st.header("Résultats des prédictions")
             st.dataframe(st.session_state.df_result.style.set_properties(**{
                 'background-color': df_bg_color,
                 'color': df_text_color
@@ -153,7 +153,7 @@ if uploaded_file is not None:
             
             # Bouton KPI
             
-            if st.button("📊 Voir les KPI"):
+            if st.button(" Voir les statistiques"):
                 pct_vrai = round(vrai/total*100,1) if total>0 else 0
                 pct_faux = round(faux/total*100,1) if total>0 else 0
 
@@ -179,7 +179,7 @@ if uploaded_file is not None:
             
             # Graphiques
            
-            st.header("4️⃣ Graphiques")
+            st.header("Graphiques")
             chart_type = st.selectbox("Type de graphique", ["Camembert", "Barplot"], key="graph_select")
             if st.button("📈 Afficher le graphique"):
                 labels = ["Vrai billet", "Faux billet"]
@@ -204,7 +204,7 @@ if uploaded_file is not None:
             
             # Télécharger CSV
         
-            st.header("5️⃣ Télécharger le fichier avec prédictions")
+            st.header("Télécharger le fichier de prédictions")
             csv_data = st.session_state.df_result.to_csv(index=False).encode("utf-8")
             st.download_button(
                 label="📥 Télécharger CSV",
