@@ -153,7 +153,7 @@ if uploaded_file is not None:
             
             # Bouton KPI
             
-            if st.button(" Voir les statistiques"):
+            if st.button("statistiques"):
                 pct_vrai = round(vrai/total*100,1) if total>0 else 0
                 pct_faux = round(faux/total*100,1) if total>0 else 0
 
@@ -181,7 +181,7 @@ if uploaded_file is not None:
            
             st.header("Graphiques")
             chart_type = st.selectbox("Type de graphique", ["Camembert", "Barplot"], key="graph_select")
-            if st.button("📈 Afficher le graphique de répartition"):
+            if st.button("📈 Graphique de répartition"):
                 labels = ["Vrai billet", "Faux billet"]
                 values = [vrai, faux]
 
