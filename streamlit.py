@@ -93,9 +93,10 @@ div.stFileUploader {
 </style>
 """, unsafe_allow_html=True)
 
-# -----------------------------
-# Upload CSV en français
-# -----------------------------
+
+API_URL = "https://detection-faux-billets-api-488d.onrender.com/predict/"
+
+
 st.header("1️⃣ Importez votre fichier CSV")
 fichier_importé = st.file_uploader(
     label="📂 Glissez-déposez votre fichier CSV ici ou cliquez pour le sélectionner",
@@ -123,7 +124,7 @@ if fichier_importé is not None:
         if st.button("📤 Prédire"):
             with st.spinner("Envoi en cours..."):
                 data= {"file": (fichier_importé.name, fichier_importé.getvalue(), "text/csv")}
-                response = requests.post("http://127.0.0.1:8000/predict/", files=data)
+                response = requests.post(API_URL, files=data)
 
                 if response.status_code != 200:
                     st.error(f"Erreur API: {response.status_code}")
