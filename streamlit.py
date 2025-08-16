@@ -4,20 +4,17 @@ import requests
 from io import StringIO
 import csv
 import matplotlib.pyplot as plt
+import seaborn as sns
 import time
 
-# -----------------------------
-# Configuration page
-# -----------------------------
+
 st.set_page_config(
     page_title="Genuinely - Détection de faux billets",
     page_icon="💵",
     layout="wide",
 )
 
-# -----------------------------
-# Choix du thème
-# -----------------------------
+
 theme = st.sidebar.selectbox("Choisir le thème", ["Clair", "Sombre"])
 if theme == "Clair":
     bg_color = "#f5f7fa"
@@ -36,9 +33,7 @@ else:
     df_bg_color = "#1e1e1e"
     df_text_color = "#f5f5f5"
 
-# -----------------------------
-# Style CSS global
-# -----------------------------
+
 st.markdown(f"""
 <style>
 body {{
@@ -72,9 +67,8 @@ div.stFileUploader {{
 </style>
 """, unsafe_allow_html=True)
 
-# -----------------------------
 # Titre et texte défilant
-# -----------------------------
+
 st.markdown(f"""
 <div style='display: flex; justify-content: space-between; align-items: center;'>
     <span style='color: gray; font-size:14px;'>Prédictions_by_Mozart</span>
@@ -87,9 +81,9 @@ st.markdown(f"""
 
 API_URL = "https://detection-faux-billets-api-488d.onrender.com/predict/"
 
-# -----------------------------
+
 # Upload CSV
-# -----------------------------
+
 st.header("Importez votre fichier CSV")
 uploaded_file = st.file_uploader(
     label="📂 Glissez-déposez votre fichier CSV ici ou cliquez pour le sélectionner",
@@ -130,9 +124,8 @@ if uploaded_file is not None:
                     else:
                         st.error("⚠ Réponse API invalide")
 
-        # -----------------------------
         # Résultats
-        # -----------------------------
+       
         if "df_result" in st.session_state:
             st.header("Résultats des prédictions")
             st.dataframe(st.session_state.df_result.style.set_properties(**{
@@ -144,9 +137,9 @@ if uploaded_file is not None:
             faux = st.session_state.summary.get("faux_billet",0)
             total = vrai + faux
 
-            # -----------------------------
+          
             # Bouton KPI
-            # -----------------------------
+         
             if st.button("📊 Voir les KPI"):
                 pct_vrai = round(vrai/total*100,1) if total>0 else 0
                 pct_faux = round(faux/total*100,1) if total>0 else 0
@@ -169,9 +162,9 @@ if uploaded_file is not None:
 
             st.markdown("---")
 
-            # -----------------------------
+            
             # Graphiques principaux
-            # -----------------------------
+           
             st.header("Graphiques principaux")
             chart_type = st.selectbox("Type de graphique", ["Camembert", "Barplot"], key="graph_select")
             if st.button("📈 Voir graphique"):
@@ -194,9 +187,9 @@ if uploaded_file is not None:
                         ax.tick_params(axis='y', colors=text_color)
                     st.pyplot(fig)
 
-            # -----------------------------
+           
             # Autres graphiques (distribution des features)
-            # -----------------------------
+        
             st.sidebar.header("Autres graphiques")
             if st.sidebar.button("📊 Voir distributions"):
                 numeric_cols = df.select_dtypes(include="number").columns.tolist()
@@ -206,7 +199,8 @@ if uploaded_file is not None:
                     st.header("Histogrammes des features")
                     for col in numeric_cols:
                         fig, ax = plt.subplots(figsize=(6,3))
-                        ax.hist(df[col].dropna(), bins=20, color="#117A65", edgecolor="black")
+                        #ax.hist(df[col].dropna(), bins=20, color="#117A65", edgecolor="black")
+                        sns.histplot(df[col].dropna(), bins=20, kde=True, color="#117A65", ax=ax)
                         ax.set_title(f"Distribution de {col}", color=text_color)
                         ax.set_xlabel(col, color=text_color)
                         ax.set_ylabel("Fréquence", color=text_color)
@@ -214,9 +208,9 @@ if uploaded_file is not None:
                         ax.tick_params(axis='y', colors=text_color)
                         st.pyplot(fig)
 
-            # -----------------------------
+           
             # Télécharger CSV
-            # -----------------------------
+      
             st.header("Télécharger le fichier de prédictions")
             csv_data = st.session_state.df_result.to_csv(index=False).encode("utf-8")
             st.download_button(
