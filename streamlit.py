@@ -4,7 +4,6 @@ import requests
 from io import StringIO
 import csv
 import matplotlib.pyplot as plt
-import seaborn as sns
 import time
 
 
