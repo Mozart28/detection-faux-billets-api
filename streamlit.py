@@ -199,8 +199,7 @@ if uploaded_file is not None:
                     st.header("Histogrammes des features")
                     for col in numeric_cols:
                         fig, ax = plt.subplots(figsize=(6,3))
-                        #ax.hist(df[col].dropna(), bins=20, color="#117A65", edgecolor="black")
-                        sns.histplot(df[col].dropna(), bins=20, kde=True, color="#117A65", ax=ax)
+                        ax.hist(df[col].dropna(), bins=20, color="#117A65", edgecolor="black")
                         ax.set_title(f"Distribution de {col}", color=text_color)
                         ax.set_xlabel(col, color=text_color)
                         ax.set_ylabel("Fréquence", color=text_color)
