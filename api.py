@@ -8,7 +8,7 @@ app = FastAPI()
 
 pipeline_log = joblib.load("model_detection_faux_billets.pkl")
 
-@app.post("/predict/")
+@app.post("/prediction/")
 async def predict(file: UploadFile = File(...)):
     try:
         content = await file.read()
