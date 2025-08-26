@@ -78,8 +78,8 @@ st.markdown(f"""
 </marquee>
 """, unsafe_allow_html=True)
 
+#API_URL = "https://detection-faux-billets-api-488d.onrender.com/prediction/"
 API_URL = "https://detection-faux-billets-api-488d.onrender.com/prediction/"
-
 
 # Upload CSV
 
