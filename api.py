@@ -9,16 +9,16 @@ app = FastAPI()
 pipeline_log = joblib.load("model_detection_faux_billets.pkl")
 
 @app.post("/prediction/")
-async def predict(file: UploadFile = File(...)):
+async def predict(fichier: UploadFile = File(...)):
     try:
-        content = await file.read()
-        text_data = content.decode("utf-8")
+        contenu = await fichier.read()
+        text_data = contenu.decode("utf-8")
 
         
         if ";" in text_data:
             df = pd.read_csv(StringIO(text_data), sep=";")
         else:
-            df = pd.read_csv(StringIO(text_data))  # par défaut ','
+            df = pd.read_csv(StringIO(text_data))  
 
        
         colonnes_utiles = ["height_right", "margin_low"]
