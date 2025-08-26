@@ -21,7 +21,7 @@ async def predict(fichier: UploadFile = File(...)):
             df = pd.read_csv(StringIO(text_data))  
 
        
-        colonnes_utiles = ["height_right", "margin_low"]
+        colonnes_utiles = ["margin_low", "margin_up","length"]
         colonnes_manquantes = [col for col in colonnes_utiles if col not in df.columns]
 
         if colonnes_manquantes:
