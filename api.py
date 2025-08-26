@@ -6,7 +6,7 @@ from io import StringIO
 app = FastAPI()
 
 # Charger le modèle
-pipeline_log = joblib.load("model_detection_faux_billets.pkl")
+pipeline_rf = joblib.load("model_detection_faux_billets.pkl")
 
 @app.post("/prediction/")
 async def predict(fichier: UploadFile = File(...)):
@@ -34,8 +34,8 @@ async def predict(fichier: UploadFile = File(...)):
             df_model["margin_low"] = df_model["margin_low"].fillna(df_model["margin_low"].median())
 
         # Prédictions
-        predictions = pipeline_log.predict(df_model)
-        proba_predictions = pipeline_log.predict_proba(df_model)[:, 1]
+        predictions = pipeline_rf.predict(df_model)
+        proba_predictions = pipeline_rf.predict_proba(df_model)[:, 1]
 
         df_model["prediction"] = predictions
         df_model["proba"] = [round(p, 2) for p in proba_predictions]

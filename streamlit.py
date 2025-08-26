@@ -78,7 +78,6 @@ st.markdown(f"""
 </marquee>
 """, unsafe_allow_html=True)
 
-#API_URL = "https://detection-faux-billets-api-488d.onrender.com/prediction/"
 API_URL = "https://detection-faux-billets-api-488d.onrender.com/prediction/"
 
 # Upload CSV
@@ -107,7 +106,7 @@ if uploaded_file is not None:
         st.header("Détection")
         if st.button("📤 Prédire"):
             with st.spinner("Envoi en cours..."):
-                files = {"file": (uploaded_file.name, uploaded_file.getvalue(), "text/csv")}
+                files = {"fichier": (uploaded_file.name, uploaded_file.getvalue(), "text/csv")}
                 response = requests.post(API_URL, files=files)
 
                 if response.status_code != 200:
