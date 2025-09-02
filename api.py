@@ -35,11 +35,13 @@ async def predict(fichier: UploadFile = File(...)):
 
         # Prédictions
         predictions = pipeline_rf.predict(df_model)
-        proba_predictions = pipeline_rf.predict_proba(df_model)[:, 1]
+        proba_predictions_1 = pipeline_rf.predict_proba(df_model)[:, 1]
+        proba_predictions_0 = pipeline_rf.predict_proba(df_model)[:, 0]
+
 
         df_model["prediction"] = predictions
-        df_model["proba"] = [round(p, 2) for p in proba_predictions]
-
+        df_model["probabilités_0"] = [round(p, 2) for p in proba_predictions_0]
+        df_model["probabilités_1"] = [round(p, 2) for p in proba_predictions_1]
         # Résumé
         counts = pd.Series(predictions).value_counts().to_dict()
         summary = {

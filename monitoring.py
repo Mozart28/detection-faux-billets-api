@@ -9,11 +9,11 @@ from evidently.metric_preset import DataDriftPreset, DataQualityPreset, TargetDr
 app = FastAPI()
 
 # Charger modèle
-pipeline_log = joblib.load("model_detection_faux_billets.pkl")
+pipeline_rf = joblib.load("model_detection_faux_billets.pkl")
 
 # Référence (jeu d’entraînement utilisé comme baseline)
-billets = pd.read_csv("reference_data.csv")  # <-- à préparer une fois pour toutes
-billets_features= billets[["height_right", "margin_low"]]
+billets = pd.read_csv("reference_data.csv")  
+billets_features= billets[["margin_up", "margin_low","length"]]
 
 @app.post("/monitoring/")
 async def monitoring(file: UploadFile = File(...)):
@@ -28,7 +28,7 @@ async def monitoring(file: UploadFile = File(...)):
             df = pd.read_csv(StringIO(text_data))  # par défaut ','
 
         # Vérifier colonnes
-        colonnes_utiles = ["height_right", "margin_low"]
+        colonnes_utiles = ["margin_up", "margin_low","length"]
         colonnes_manquantes = [col for col in colonnes_utiles if col not in df.columns]
 
         if colonnes_manquantes:
@@ -39,7 +39,7 @@ async def monitoring(file: UploadFile = File(...)):
         current_features["margin_low"] = current_features["margin_low"].fillna(current_features["margin_low"].median())
 
         # Prédictions
-        predictions = pipeline_log.predict(current_features)
+        predictions = pipeline_rf.predict(current_features)
         current_features["prediction"] = predictions
 
         # Rapport Evidently (sans y_true)
