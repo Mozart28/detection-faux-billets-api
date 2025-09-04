@@ -39,7 +39,7 @@ async def predict(fichier: UploadFile = File(...)):
         proba_predictions_0 = pipeline_rf.predict_proba(df_model)[:, 0]
 
 
-        df_model["prediction"] = predictions
+        df_model["predictions"] = predictions
         df_model["probabilités_0"] = [round(p, 2) for p in proba_predictions_0]
         df_model["probabilités_1"] = [round(p, 2) for p in proba_predictions_1]
         # Résumé

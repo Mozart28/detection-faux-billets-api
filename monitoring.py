@@ -1,19 +1,19 @@
-
 from fastapi import FastAPI, UploadFile, File
 import pandas as pd
 import joblib
 from io import StringIO
-from evidently.report import Report
-from evidently.metric_preset import DataDriftPreset, DataQualityPreset, TargetDriftPreset
+from evidently import Report
+from evidently.metrics import ValueDrift, MissingValueCount, RowCount
 
 app = FastAPI()
 
 # Charger modèle
 pipeline_rf = joblib.load("model_detection_faux_billets.pkl")
 
-# Référence (jeu d’entraînement utilisé comme baseline)
-billets = pd.read_csv("reference_data.csv")  
-billets_features= billets[["margin_up", "margin_low","length"]]
+# Charger référence
+billets = pd.read_csv("billets.csv", sep=";")
+columns_to_monitor = ["margin_low", "margin_up", "length"]
+billets_features = billets[columns_to_monitor]
 
 @app.post("/monitoring/")
 async def monitoring(file: UploadFile = File(...)):
@@ -25,33 +25,44 @@ async def monitoring(file: UploadFile = File(...)):
         if ";" in text_data:
             df = pd.read_csv(StringIO(text_data), sep=";")
         else:
-            df = pd.read_csv(StringIO(text_data))  # par défaut ','
+            df = pd.read_csv(StringIO(text_data))
+
+        # Nettoyage des colonnes : supprimer espaces et mettre en minuscules
+        df.columns = df.columns.str.strip().str.lower()
 
         # Vérifier colonnes
-        colonnes_utiles = ["margin_up", "margin_low","length"]
-        colonnes_manquantes = [col for col in colonnes_utiles if col not in df.columns]
-
+        colonnes_manquantes = [col for col in columns_to_monitor if col not in df.columns]
         if colonnes_manquantes:
-            return {"error": f"Colonnes manquantes : {', '.join(colonnes_manquantes)}"}
+            return {
+                "error": f"Les colonnes suivantes sont manquantes : {', '.join(colonnes_manquantes)}"
+            }
 
-        # Nettoyage
-        current_features = df[colonnes_utiles].copy()
-        current_features["margin_low"] = current_features["margin_low"].fillna(current_features["margin_low"].median())
+        # Sélectionner colonnes utiles
+        current_features = df[columns_to_monitor].copy()
+        current_features["margin_low"] = current_features["margin_low"].fillna(
+            current_features["margin_low"].median()
+        )
 
         # Prédictions
         predictions = pipeline_rf.predict(current_features)
-        current_features["prediction"] = predictions
+        current_features["prediction"] = predictions  # ajout mais pas pour Evidently
 
-        # Rapport Evidently (sans y_true)
-        report = Report(metrics=[
-            DataQualityPreset(),   # qualité des données
-            DataDriftPreset(),     # dérive des features
-            TargetDriftPreset()    # dérive des prédictions
-        ])
+        # Créer métriques Evidently
+        metrics_list = [ValueDrift(column_name=col) for col in columns_to_monitor]
+        metrics_list += [MissingValueCount(), RowCount()]
 
-        report.run(reference_data=billets_features, current_data=current_features)
+        report = Report(metrics=metrics_list)
 
-        # Retourner en JSON
+        # Passer uniquement les colonnes surveillées
+        report.run(
+            reference_data=billets_features,
+            current_data=current_features[columns_to_monitor]
+        )
+
+        # Sauvegarde HTML
+        report.save_html("monitoring_report.html")
+
+        # Retourner résultats JSON
         return report.as_dict()
 
     except Exception as e:
