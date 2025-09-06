@@ -77,7 +77,7 @@ st.markdown(f"""
 </marquee>
 """, unsafe_allow_html=True)
 
-#  API
+#  API du modèle Random Forest
 API_URL = "https://detection-faux-billets-api-488d.onrender.com/prediction/"
 
 
@@ -119,7 +119,7 @@ if uploaded_file is not None:
                     elif "predictions" in data:
                         st.session_state.df_result = pd.DataFrame(data["predictions"])
                         st.session_state.summary = data.get("summary", {"vrai_billet": 0, "faux_billet": 0})
-                        st.success("✅ Vos billets ont été vérifiés avec succès!")
+                        st.success(" Vos billets ont été vérifiés avec succès!")
                     else:
                         st.error("⚠ Réponse API invalide")
 
@@ -198,7 +198,7 @@ if "df_result" in st.session_state:
                 ax.tick_params(axis='y', colors=text_color)
             st.pyplot(fig)
 
-    # Distributions des colonnes numériques
+    # Distributions des dimensions
     st.sidebar.header("Autres graphiques")
     if st.sidebar.button(" Voir distributions"):
         numeric_cols = st.session_state.df_result.select_dtypes(include="number").columns.tolist()
@@ -216,7 +216,7 @@ if "df_result" in st.session_state:
                 ax.tick_params(axis='y', colors=text_color)
                 st.pyplot(fig)
 
-    #  Télécharger CSV (toujours dispo après prédiction)
+    #  Télécharger CSV 
     st.header("Télécharger le fichier de prédictions")
     csv_data = st.session_state.df_result.to_csv(index=False, sep=";", encoding="utf-8-sig")
     st.download_button(
