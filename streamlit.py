@@ -1,10 +1,4 @@
 import streamlit as st
-st.set_page_config(
-    page_title="Genuinely - Détection de faux billets",
-    page_icon="💶",
-    layout="wide"
-)
-
 import pandas as pd
 import requests
 from io import StringIO
@@ -13,7 +7,11 @@ import matplotlib.pyplot as plt
 import time
 
 
-
+st.set_page_config(
+    page_title="Genuinely - Détection de faux billets",
+    page_icon="💶",
+    layout="wide"
+)
 
 
 #  Thème
@@ -73,10 +71,10 @@ div.stFileUploader {{
 st.markdown(f"""
 <div style='display: flex; justify-content: space-between; align-items: center;'>
     <span style='color: gray; font-size:14px;'>Prédictions_by_Mozart</span>
-    <h1 style='text-align: center; color: #2E86AB; flex-grow:1;'>💵 Genuinely 💵</h1>
+    <h1 style='text-align: center; color: #2E86AB; flex-grow:1;'>💶 Genuinely 💶</h1>
 </div>
 <marquee behavior="scroll" direction="left" style="color: #117A65; font-size:20px;">
-    🔍 Analysez l'authenticité de vos billets en temps réel !
+    🔍 Analysez l'authenticité de vos billets d'euros en temps réel !
 </marquee>
 """, unsafe_allow_html=True)
 
