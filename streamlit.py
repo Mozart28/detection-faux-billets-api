@@ -1,4 +1,10 @@
 import streamlit as st
+st.set_page_config(
+    page_title="Genuinely - Détection de faux billets",
+    page_icon="💶",
+    layout="wide"
+)
+
 import pandas as pd
 import requests
 from io import StringIO
@@ -7,11 +13,8 @@ import matplotlib.pyplot as plt
 import time
 
 
-st.set_page_config(
-    page_title="Genuinely - Détection de faux billets",
-    page_icon="💵",
-    layout="wide",
-)
+
+
 
 #  Thème
 theme = st.sidebar.selectbox("Choisir le thème", ["Clair", "Sombre"])
